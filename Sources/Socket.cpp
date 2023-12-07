@@ -7,10 +7,6 @@
 namespace ESNet {
 	Socket::Socket() : m_Octets{ 0 }, m_Port{ 0 }, m_Socket{ INVALID_SOCKET } {
 		m_Socket = ::socket(AF_INET, SOCK_STREAM, ::IPPROTO_TCP);
-		if (m_Socket == INVALID_SOCKET) {
-			SPDLOG_ERROR("Socket creation failed");
-			return;
-		}
 	}
 	Socket::Socket(u32 const octets, u16 const port, u64 const socket) : m_Octets{ octets }, m_Port{ port }, m_Socket{ socket } {
 
@@ -19,11 +15,6 @@ namespace ESNet {
 		socket.m_Octets = NULL;
 		socket.m_Port = NULL;
 		socket.m_Socket = INVALID_SOCKET;
-	}
-	Socket::~Socket() {
-		if (m_Socket != INVALID_SOCKET) {
-			SPDLOG_ERROR("Socket ({}:{}) destructed without closing", octetsToAddress(m_Octets), m_Port);
-		}
 	}
 
 	ESNetError Socket::bind(std::string_view const& address, u16 const port) {
@@ -35,7 +26,6 @@ namespace ESNet {
 		if (result == SOCKET_ERROR) {
 			::freeaddrinfo(address_info);
 			auto const& enum_entry = getEnumEntry(static_cast<ESNetError>(::WSAGetLastError()));
-			SPDLOG_ERROR("Failed to bind socket to address ({}:{}): {}", address, port, enum_entry.name);
 			return enum_entry.error;
 		}
 
@@ -55,7 +45,6 @@ namespace ESNet {
 		if (result == SOCKET_ERROR) {
 			::freeaddrinfo(address_info);
 			auto const& enum_entry = getEnumEntry(static_cast<ESNetError>(::WSAGetLastError()));
-			SPDLOG_ERROR("Failed to bind socket to address ({}:{}): {}", address, port, enum_entry.name);
 			return enum_entry.error;
 		}
 
@@ -72,7 +61,6 @@ namespace ESNet {
 		result = ::listen(m_Socket, SOMAXCONN);
 		if (result == SOCKET_ERROR) {
 			auto const& enum_entry = getEnumEntry(static_cast<ESNetError>(::WSAGetLastError()));
-			SPDLOG_ERROR("Failed to listen on socket ({}:{}): {}", octetsToAddress(m_Octets), m_Port, enum_entry.name);
 			return enum_entry.error;
 		}
 
@@ -86,7 +74,6 @@ namespace ESNet {
 		auto const addr = processWS2Address(AF_INET, &address.sin_addr);
 		if (socket_handle == INVALID_SOCKET) {
 			auto const& enum_entry = getEnumEntry(static_cast<ESNetError>(::WSAGetLastError()));
-			SPDLOG_ERROR("Failed to accept incoming connection on socket ({}:{}) from ({}:{}): {}", octetsToAddress(m_Octets), m_Port, addr.get(), address.sin_port, enum_entry.name);
 			return { Socket{}, enum_entry.error };
 		}
 		return { Socket{addressToOctets(std::string_view{addr.get(), static_cast<std::size_t>(std::strlen(addr.get()))}), m_Port, socket_handle}, ESNetError::Success };
@@ -98,7 +85,6 @@ namespace ESNet {
 		result = ::closesocket(m_Socket);
 		if (result == SOCKET_ERROR) {
 			auto const& enum_entry = getEnumEntry(static_cast<ESNetError>(::WSAGetLastError()));
-			SPDLOG_ERROR("Failed to close socket on address ({}:{}): {}", octetsToAddress(m_Octets), m_Port, enum_entry.name);
 			return enum_entry.error;
 		}
 

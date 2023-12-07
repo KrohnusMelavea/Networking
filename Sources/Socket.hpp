@@ -1,12 +1,9 @@
 #pragma once
 
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
-
 #include "Common/types.hpp"
 #include "Common/ESNetError.hpp"
 #include "StaticArray.hpp"
 #include "DynamicArray.hpp"
-#include <spdlog/spdlog.h>
 #include <span>
 #include <tuple>
 #include <string_view>
@@ -17,7 +14,6 @@ namespace ESNet {
 		Socket();
 		Socket(u32 const octets, u16 const port, u64 const socket);
 		Socket(Socket&& socket) noexcept;
-		~Socket();
 
 		ESNetError bind(std::string_view const& address, u16 const port);
 		ESNetError connect(std::string_view const& address, u16 const port);
@@ -31,7 +27,6 @@ namespace ESNet {
 			result = ::send(m_Socket, reinterpret_cast<const char*>(std::data(data)), static_cast<i32>(std::size(data)), NULL);
 			if (result == SOCKET_ERROR) {
 				auto const& enum_entry = getEnumEntry(static_cast<ESNetError>(::WSAGetLastError()));
-				SPDLOG_ERROR("Failed to send {} bytes to socket ({}:{}): {}", size, octetsToAddress(m_Octets), m_Port, enum_entry.name);
 				return enum_entry.error;
 			}
 
@@ -45,7 +40,6 @@ namespace ESNet {
 			result = ::recv(m_Socket, reinterpret_cast<char*>(std::data(buffer)), static_cast<i32>(std::size(buffer)), NULL);
 			if (result == SOCKET_ERROR) {
 				auto const& enum_entry = getEnumEntry(static_cast<ESNetError>(::WSAGetLastError()));
-				SPDLOG_ERROR("Failed to receive {} bytes from socket ({}:{}): {}", size, octetsToAddress(m_Octets), m_Port, enum_entry.name);
 				return { buffer, enum_entry.error };
 			}
 
