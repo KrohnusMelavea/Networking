@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common/types.hpp"
+#include "Common/ws2.hpp"
 #include "Common/ESNetError.hpp"
 #include "StaticArray.hpp"
 #include "DynamicArray.hpp"
