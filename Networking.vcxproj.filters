@@ -29,9 +29,6 @@
     <ClInclude Include="Sources\Socket.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Common\types.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Sources\Common\ws2.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>

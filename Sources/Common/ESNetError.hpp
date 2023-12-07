@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "Common/types.hpp"
 #include <array>
 #include <algorithm>
 #include <string_view>

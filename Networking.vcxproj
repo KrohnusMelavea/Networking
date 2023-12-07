@@ -140,7 +140,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\Common\ESNetError.hpp" />
-    <ClInclude Include="Sources\Common\types.hpp" />
     <ClInclude Include="Sources\Socket.hpp" />
     <ClInclude Include="Sources\Common\ws2.hpp" />
   </ItemGroup>
