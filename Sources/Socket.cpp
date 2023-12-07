@@ -20,7 +20,10 @@ namespace ESNet {
 	ESNetError Socket::bind(std::string_view const& address, u16 const port) {
 		i32 result = -1;
 
-		auto const address_info = getaddrinfo(address, port);
+		auto [address_info, address_info_status] = getaddrinfo(address, port);
+		if (address_info_status != ESNetError::Success) {
+			return address_info_status;
+		}
 
 		result = ::bind(m_Socket, address_info->ai_addr, static_cast<i32>(address_info->ai_addrlen));
 		if (result == SOCKET_ERROR) {
@@ -39,7 +42,10 @@ namespace ESNet {
 	ESNetError Socket::connect(std::string_view const& address, u16 const port) {
 		i32 result = -1;
 		
-		auto const address_info = getaddrinfo(address, port);
+		auto [address_info, address_info_status] = getaddrinfo(address, port);
+		if (address_info_status != ESNetError::Success) {
+			return address_info_status;
+		}
 
 		result = ::connect(m_Socket, address_info->ai_addr, static_cast<i32>(address_info->ai_addrlen));
 		if (result == SOCKET_ERROR) {
@@ -72,6 +78,7 @@ namespace ESNet {
 		i32 address_length = sizeof(::sockaddr_in);
 		socket_handle = ::accept(m_Socket, reinterpret_cast<::sockaddr*>(&address), &address_length);
 		auto const addr = processWS2Address(AF_INET, &address.sin_addr);
+		std::cout << addr.get() << '\n';
 		if (socket_handle == INVALID_SOCKET) {
 			auto const& enum_entry = getEnumEntry(static_cast<ESNetError>(::WSAGetLastError()));
 			return { Socket{}, enum_entry.error };

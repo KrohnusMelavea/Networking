@@ -3,19 +3,20 @@
 #define WIN32_LEAN_AND_MEAN
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include "Common/types.hpp"
+#include "ESNetError.hpp"
 #include <windows.h>
 #include <iphlpapi.h>
+#include <tuple>
 #include <memory>
-#include <iostream>
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <string_view>
 
 namespace ESNet {
-	void startup();
+	bool startup();
 	void shutdown();
 
-	::addrinfo* getaddrinfo(std::string_view const& address, u16 const port);
+	std::tuple<::addrinfo*, ESNetError> getaddrinfo(std::string_view const& address, u16 const port);
 	std::unique_ptr<char[]> processWS2Address(i32 const family, void *const ws2address);
 
 	inline constexpr u32 addressToOctets(std::string_view const& address) noexcept {
